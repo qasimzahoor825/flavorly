@@ -2,6 +2,8 @@
 
 A full-stack **recipe sharing platform** — built as a software-engineering selection task by **Qasim Zahoor**.
 
+> **Live demo:** <https://flavorly-gamma.vercel.app> — deployed on Vercel (serverless API + static frontend).
+
 Flavorly combines a hand-crafted, animated product UI with a real REST API backend: users register/login with JWT, browse and search a recipe library, open rich recipe detail pages, and publish their own recipes which immediately appear in the live library.
 
 ## Highlights
