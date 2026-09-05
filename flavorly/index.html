@@ -1,0 +1,1998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flavorly — Discover recipes worth sharing</title>
+<meta name="description" content="Flavorly — a production-ready recipe sharing platform concept. Explore delicious recipes, discover new flavors, and share your favorite creations.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF6F0;
+  --bg-soft:#F3EDE4;
+  --surface:#FFFFFF;
+  --surface-alt:#FFFFFF;
+  --ink:#211E19;
+  --ink-2:#4C463D;
+  --ink-3:#8A8276;
+  --line:#E9E2D7;
+  --line-2:#F0EAE0;
+  --green:#3B6B3F;
+  --green-deep:#2E5431;
+  --green-soft:#EAF1E8;
+  --green-mist:#F4F8F2;
+  --amber:#C77B2F;
+  --red:#B03A2E;
+  --radius:18px;
+  --radius-sm:12px;
+  --radius-lg:26px;
+  --shadow-sm:0 1px 2px rgba(33,30,25,.05),0 4px 12px rgba(33,30,25,.05);
+  --shadow-md:0 2px 4px rgba(33,30,25,.06),0 12px 32px rgba(33,30,25,.10);
+  --shadow-lg:0 8px 24px rgba(33,30,25,.12),0 28px 64px rgba(33,30,25,.16);
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-display:'Fraunces',Georgia,'Times New Roman',serif;
+  --max:1200px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+ul{list-style:none}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:600;line-height:1.15;letter-spacing:-.01em}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 40px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);
+}
+.index-num{color:var(--green)}
+.section{padding:72px 0}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:40px}
+.section-head h2{font-size:clamp(30px,3vw,40px);margin-top:12px}
+.section-head p{color:var(--ink-2);margin-top:10px;max-width:520px}
+.link-more{
+  display:inline-flex;align-items:center;gap:8px;font-weight:600;color:var(--green);
+  white-space:nowrap;border-bottom:2px solid transparent;transition:.2s;
+}
+.link-more:hover{border-color:var(--green)}
+.link-more svg{transition:transform .2s}
+.link-more:hover svg{transform:translateX(4px)}
+.view{display:none}
+.view.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.view.active>.fade{animation:fadeIn .5s ease both}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border-radius:999px;padding:13px 26px;font-weight:600;font-size:15px;
+  transition:.22s;border:1.5px solid transparent;white-space:nowrap;line-height:1;
+}
+.btn svg{flex:none}
+.btn-primary{background:var(--green);color:#fff;box-shadow:0 8px 20px rgba(59,107,63,.28)}
+.btn-primary:hover{background:var(--green-deep);transform:translateY(-2px);box-shadow:0 12px 26px rgba(59,107,63,.34)}
+.btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green);transform:translateY(-2px)}
+.btn-light{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
+.btn-light:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);color:var(--green)}
+.btn-sm{padding:9px 18px;font-size:14px}
+.btn-lock{display:none}
+body.not-authed .btn-lock{display:inline-flex}
+body.not-authed .btn-auth-only{display:none}
+
+.app{min-height:100vh;display:flex;flex-direction:column}
+main{flex:1}
+
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(250,246,240,.86);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line-2);
+}
+.topbar-inner{max-width:var(--max);margin:0 auto;padding:0 40px;height:72px;display:flex;align-items:center;gap:40px}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--font-display);font-weight:700;font-size:22px;letter-spacing:-.02em}
+.brand-mark{
+  width:38px;height:38px;border-radius:12px;background:var(--green);color:#fff;
+  display:grid;place-items:center;box-shadow:0 6px 16px rgba(59,107,63,.35);
+}
+.brand-mark svg{width:20px;height:20px}
+.brand small{display:block;font-family:var(--font-body);font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin-top:1px}
+.brand span{display:flex;align-items:baseline;gap:8px}
+.nav{display:flex;gap:6px;flex:1;margin-left:8px}
+.menu-toggle{display:none;width:42px;height:42px;border-radius:12px;place-items:center;color:var(--ink-2);border:1px solid transparent;transition:.2s}
+.menu-toggle:hover{background:var(--surface);color:var(--ink);border-color:var(--line)}
+.menu-toggle svg{width:20px;height:20px}
+.nav a{
+  padding:9px 16px;border-radius:999px;font-size:14.5px;font-weight:500;color:var(--ink-2);
+  transition:.2s;display:flex;align-items:center;gap:7px;
+}
+.nav a:hover{color:var(--ink);background:rgba(33,30,25,.045)}
+.nav a.active{color:var(--green);background:var(--green-soft);font-weight:600}
+.nav a.active::after{content:'';position:absolute}
+.top-actions{display:flex;align-items:center;gap:8px}
+.icon-btn{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:var(--ink-2);
+  transition:.2s;position:relative;border:1px solid transparent;
+}
+.icon-btn:hover{background:var(--surface);color:var(--ink);border-color:var(--line);box-shadow:var(--shadow-sm)}
+.icon-btn svg{width:20px;height:20px}
+.badge-dot{position:absolute;top:9px;right:10px;width:8px;height:8px;border-radius:50%;background:#D64545;border:2px solid var(--bg)}
+.avatar{
+  width:42px;height:42px;border-radius:50%;background:var(--green);color:#fff;
+  display:grid;place-items:center;font-weight:700;font-size:14px;cursor:pointer;border:2px solid var(--line);
+  transition:.2s;
+}
+.avatar:hover{border-color:var(--green);box-shadow:0 0 0 4px var(--green-soft)}
+.avatar-q{display:grid}
+body:not(.not-authed) .avatar-q{display:none}
+body:not(.not-authed) .topbar .avatar-initial{display:grid}
+.avatar-initial{display:none}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.hero{overflow:hidden;position:relative}
+.hero-pad{padding:72px 0 88px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.hero h1{font-size:clamp(44px,4.6vw,66px);font-weight:600;margin:18px 0 20px;color:var(--ink)}
+.hero h1 em{font-style:italic;color:var(--green)}
+.hero p.lede{font-size:18px;color:var(--ink-2);max-width:480px;margin-bottom:32px}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.hero-stats{display:flex;gap:32px;margin-top:44px;padding-top:28px;border-top:1px solid var(--line)}
+.stat b{font-family:var(--font-display);font-size:26px;display:block;color:var(--ink)}
+.stat span{font-size:13px;color:var(--ink-3)}
+.big-search{
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;
+  box-shadow:var(--shadow-md);padding:8px 8px 8px 22px;display:flex;align-items:center;gap:12px;
+  max-width:520px;margin-top:36px;transition:.25s;
+}
+.big-search:focus-within{border-color:var(--green);box-shadow:0 12px 32px rgba(59,107,63,.16)}
+.big-search svg{width:19px;height:19px;color:var(--ink-3);flex:none}
+.big-search input{border:none;background:none;outline:none;flex:1;font:inherit;color:var(--ink);min-width:0}
+.big-search input::placeholder{color:var(--ink-3)}
+.big-search .btn{padding:12px 22px;font-size:14.5px}
+.quick-tags{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center}
+.quick-tags span{font-size:12.5px;color:var(--ink-3)}
+.chip{
+  font-size:12.5px;font-weight:600;padding:6px 13px;border-radius:999px;background:var(--surface);
+  border:1px solid var(--line);color:var(--ink-2);transition:.2s;cursor:pointer;
+}
+.chip:hover{border-color:var(--green);color:var(--green)}
+.hero-shot{position:relative}
+.hero-shot .frame{border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lg);position:relative;aspect-ratio:5/4.4}
+.hero-shot .frame img{width:100%;height:100%;object-fit:cover}
+.hero-shot .frame::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(33,30,25,.22),transparent 40%)}
+.float-card{
+  position:absolute;background:var(--surface);border:1px solid var(--line-2);border-radius:16px;
+  box-shadow:var(--shadow-md);padding:14px 16px;display:flex;align-items:center;gap:12px;
+}
+.float-card .fc-icon{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none}
+.float-card .fc-icon svg{width:19px;height:19px}
+.fc-rate{background:#FBF3E8;color:var(--amber)}
+.fc-save{background:var(--green-soft);color:var(--green)}
+.float-card b{font-size:14px;display:block}
+.float-card small{font-size:12px;color:var(--ink-3)}
+.float-card.stars span{color:var(--amber);letter-spacing:1px}
+.fc-1{top:26px;left:-34px}
+.fc-2{bottom:34px;right:-30px}
+.hero-ring{
+  position:absolute;border-radius:50%;border:1px solid rgba(59,107,63,.16);pointer-events:none;
+}
+.hero-ring.r1{width:420px;height:420px;top:-120px;right:-120px}
+.hero-ring.r2{width:300px;height:300px;bottom:-90px;left:-70px}
+
+.ticker{border-block:1px solid var(--line-2);background:var(--bg-soft)}
+.ticker-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;height:56px;overflow:hidden}
+.ticker p{font-family:var(--font-display);font-style:italic;font-size:15px;color:var(--ink-2);white-space:nowrap}
+.ticker p b{color:var(--green);font-weight:600}
+
+.cats{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.cat-card{
+  position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:3/4;
+  display:flex;flex-direction:column;justify-content:flex-end;box-shadow:var(--shadow-sm);
+  cursor:pointer;border:1px solid var(--line-2);transition:.3s;
+}
+.cat-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.cat-card::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(24,21,17,.78),rgba(24,21,17,.12) 58%,rgba(24,21,17,0));}
+.cat-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md)}
+.cat-card:hover img{transform:scale(1.07)}
+.cat-body{position:relative;z-index:2;padding:18px;color:#fff}
+.cat-body h3{font-size:19px}
+.cat-body span{font-size:12.5px;opacity:.85;display:block;margin-top:3px}
+.cat-arrow{
+  position:absolute;top:14px;right:14px;z-index:2;width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.92);color:var(--ink);display:grid;place-items:center;opacity:0;transform:translateY(6px);transition:.3s;
+}
+.cat-card:hover .cat-arrow{opacity:1;transform:none}
+.cat-arrow svg{width:16px;height:16px}
+
+.grid-recipes{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.card{
+  background:var(--surface);border:1px solid var(--line-2);border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--shadow-sm);transition:.28s;display:flex;flex-direction:column;
+}
+.card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md)}
+.card-media{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--bg-soft)}
+.card-media img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.card:hover .card-media img{transform:scale(1.06)}
+.card-media .badge{position:absolute;top:12px;left:12px}
+.save-btn{
+  position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,.94);display:grid;place-items:center;color:var(--ink-2);
+  box-shadow:var(--shadow-sm);transition:.2s;backdrop-filter:blur(6px);
+}
+.save-btn:hover{color:var(--green);transform:scale(1.08)}
+.save-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2}
+.save-btn.saved{color:#fff;background:var(--green)}
+.save-btn.saved svg{fill:#fff;stroke:var(--green)}
+.card-body{padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card-title{font-size:18px;font-weight:600;line-height:1.25}
+.card-title:hover{color:var(--green)}
+.card-desc{font-size:13.5px;color:var(--ink-2);line-height:1.5}
+.card-meta{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-3);margin-top:auto}
+.card-meta .dot{width:3px;height:3px;border-radius:50%;background:var(--ink-3);opacity:.6}
+.card-meta svg{width:14px;height:14px}
+.rating{display:flex;align-items:center;gap:6px}
+.rating svg{width:15px;height:15px;color:var(--amber);fill:var(--amber)}
+.rating b{font-size:13px;color:var(--ink)}
+.rating small{color:var(--ink-3);font-size:12px}
+.badge{
+  display:inline-flex;align-items:center;gap:5px;border-radius:999px;font-size:11.5px;font-weight:600;
+  padding:5px 11px;letter-spacing:.01em;
+}
+.badge-plain{background:var(--surface);border:1px solid var(--line);color:var(--ink-2);box-shadow:var(--shadow-sm);backdrop-filter:blur(6px)}
+.badge-green{background:var(--green-soft);color:var(--green)}
+.badge-amber{background:#FBF3E8;color:var(--amber)}
+.badge-red{background:#FBECE6;color:var(--red)}
+.badge-stone{background:#F1EDE6;color:var(--ink-2)}
+.trail{border-top:1px solid var(--line-2);padding-top:14px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-3)}
+.trail svg{width:14px;height:14px;color:var(--green)}
+
+.how{background:var(--surface);border-block:1px solid var(--line-2)}
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.how-step{position:relative;padding:26px;border:1px solid var(--line-2);border-radius:var(--radius);background:var(--surface);transition:.25s}
+.how-step:hover{border-color:rgba(59,107,63,.35);box-shadow:var(--shadow-sm)}
+.how-step .n{
+  font-family:var(--font-display);font-size:18px;color:var(--green);font-style:italic;
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+}
+.how-step .n::after{content:'';flex:1;height:1px;background:var(--line-2)}
+.how-ic{width:44px;height:44px;border-radius:13px;background:var(--green-mist);color:var(--green);display:grid;place-items:center;margin-bottom:14px}
+.how-ic svg{width:21px;height:21px}
+.how-step h3{font-size:17px;margin-bottom:6px}
+.how-step p{font-size:13.5px;color:var(--ink-2)}
+.how-arrow{position:absolute;top:-12px;right:22px;display:none}
+
+.spotlight{
+  background:linear-gradient(120deg,var(--green-deep) 0%,var(--green) 100%);
+  color:#fff;border-radius:var(--radius-lg);overflow:hidden;position:relative;padding:56px;
+  display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;
+}
+.spotlight::before{content:'';position:absolute;width:420px;height:420px;border-radius:50%;border:1px solid rgba(255,255,255,.14);top:-160px;right:-120px;pointer-events:none}
+.spotlight::after{content:'';position:absolute;width:260px;height:260px;border-radius:50%;border:1px solid rgba(255,255,255,.14);bottom:-110px;left:-60px;pointer-events:none}
+.sl-tag{display:inline-flex;gap:8px;align-items:center;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.14);padding:7px 14px;border-radius:999px;margin-bottom:20px}
+.spotlight h2{font-size:clamp(28px,3vw,38px);margin-bottom:16px}
+.spotlight p{color:rgba(255,255,255,.82);max-width:460px;font-size:15.5px}
+.spotlight .btn-light{margin-top:26px}
+.sl-visual{position:relative;z-index:2;display:grid;place-items:center}
+.sl-stack{width:100%;max-width:360px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:20px}
+.sl-stack h4{color:#DDE8D9;font-family:var(--font-body);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}
+.sl-node{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.94);color:var(--ink);border-radius:13px;padding:11px 13px;font-size:13.5px;font-weight:600;margin-bottom:8px;box-shadow:0 6px 16px rgba(0,0,0,.14)}
+.sl-node svg{width:17px;height:17px;color:var(--green);flex:none}
+.sl-node .end{margin-left:auto;opacity:.55;display:flex}
+.sl-node .end svg{color:var(--green)}
+.sl-node:last-child{margin-bottom:0}
+
+.pagination{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:44px}
+.page-btn{
+  min-width:42px;height:42px;padding:0 12px;border-radius:12px;border:1px solid var(--line);
+  background:var(--surface);font-weight:600;font-size:14px;color:var(--ink-2);display:grid;place-items:center;transition:.2s;
+}
+.page-btn:hover:not(:disabled){border-color:var(--green);color:var(--green)}
+.page-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+.page-btn:disabled{opacity:.4;cursor:default}
+
+.skeleton{border-radius:var(--radius);overflow:hidden;background:var(--surface);border:1px solid var(--line-2);display:flex;flex-direction:column}
+.sk-line{display:block;border-radius:8px;background:linear-gradient(90deg,#EFE9DF 25%,#F7F2EA 50%,#EFE9DF 75%);background-size:200% 100%;animation:sk 1.3s infinite}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk-media{aspect-ratio:4/3;width:100%;border-radius:0}
+.sk-title{height:15px;width:70%;margin:16px 16px 0}
+.sk-line.short{height:11px;width:55%;margin:10px 16px 0}
+.sk-line.mid{width:85%}
+.sk-line.last{margin-bottom:20px}
+
+.filters{display:flex;align-items:center;gap:12px;margin-bottom:28px;flex-wrap:wrap}
+.filter-search{
+  flex:1;min-width:260px;display:flex;align-items:center;gap:10px;
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:11px 18px;
+}
+.filter-search svg{width:17px;height:17px;color:var(--ink-3)}
+.filter-search input{border:none;background:none;outline:none;flex:1;font:inherit;color:var(--ink)}
+.chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.result-count{font-size:14px;color:var(--ink-3);margin-top:18px}
+.result-count b{color:var(--ink)}
+
+.detail-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:44px;align-items:start;padding:48px 0 0}
+.detail-main .hero-dish{border-radius:var(--radius-lg);overflow:hidden;position:relative;box-shadow:var(--shadow-md);margin-bottom:8px}
+.detail-main .hero-dish img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.detail-main .hero-dish .badge{position:absolute;top:16px;left:16px}
+.detail-main .hero-dish::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(24,21,17,.28),transparent 40%)}
+.quick-meta{display:flex;gap:24px;padding:18px 4px;margin-bottom:8px;flex-wrap:wrap}
+.qm{display:flex;align-items:center;gap:10px}
+.qm .qm-ic{width:38px;height:38px;border-radius:11px;background:var(--green-mist);color:var(--green);display:grid;place-items:center}
+.qm .qm-ic svg{width:17px;height:17px}
+.qm b{font-size:14.5px;display:block;line-height:1.2}
+.qm small{font-size:12px;color:var(--ink-3)}
+.detail-title{margin-bottom:14px}
+.detail-title h1{font-size:clamp(32px,3.4vw,46px);margin-bottom:14px}
+.author-row{display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap;justify-content:space-between}
+.author{display:flex;align-items:center;gap:11px}
+.author .avatar{width:38px;height:38px;font-size:13px}
+.author b{font-size:14px;display:block}
+.author small{font-size:12.5px;color:var(--ink-3)}
+.rate-pills{display:flex;align-items:center;gap:8px}
+.rate-btn{
+  display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:999px;font-weight:600;font-size:14px;
+  border:1.5px solid var(--line);background:var(--surface);transition:.2s;
+}
+.rate-btn:hover{transform:translateY(-2px)}
+.rate-btn.save:hover{border-color:var(--green);color:var(--green)}
+.rate-btn.rate:hover{border-color:var(--amber);color:var(--amber)}
+.rate-btn svg{width:16px;height:16px}
+.rate-btn.rate svg{fill:transparent;stroke:var(--amber)}
+.rate-btn.rate.pick svg{fill:var(--amber);stroke:var(--amber)}
+.stars-inline{display:flex;gap:2px;cursor:pointer}
+.stars-inline svg{width:22px;height:22px;fill:none;stroke:var(--amber);transition:.15s}
+.stars-inline:hover svg{fill:var(--amber);stroke:var(--amber)}
+.lede-detail{color:var(--ink-2);font-size:15.5px;max-width:640px;line-height:1.7}
+.panel{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
+.panel-body{padding:24px}
+.panel h3{font-size:20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.panel h3 span{font-family:var(--font-body);font-size:12.5px;color:var(--ink-3);font-weight:500}
+.ing-list{display:flex;flex-direction:column}
+.ing-row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-2);font-size:14.5px}
+.ing-row:last-child{border-bottom:none}
+.ing-row b{font-weight:600}
+.ing-row span{color:var(--ink-2)}
+.serv-tool{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding:14px 16px;background:var(--green-mist);border-radius:13px;font-size:13.5px}
+.serv-tool b{color:var(--green-deep);font-family:var(--font-body);font-weight:700}
+.step{
+  display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--line-2);
+}
+.step:last-child{border-bottom:none}
+.step-num{
+  flex:none;width:34px;height:34px;border-radius:50%;background:var(--green);color:#fff;
+  display:grid;place-items:center;font-family:var(--font-display);font-weight:600;font-size:16px;margin-top:2px;
+}
+.step p{font-size:14.5px;color:var(--ink-2);line-height:1.65}
+.step p b{color:var(--ink)}
+.side-stick{position:sticky;top:96px;display:flex;flex-direction:column;gap:20px}
+.nutrition{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line-2);border-radius:12px;overflow:hidden}
+.nutri{background:var(--surface);padding:12px 14px}
+.nutri b{font-size:16px;font-family:var(--font-display);display:block}
+.nutri span{font-size:11.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.more-picks{text-align:center}
+.more-picks .section-head{justify-content:center;text-align:center}
+.more-picks .section-head p{margin-left:auto;margin-right:auto}
+
+.split{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:24px 0 8px}
+.split-art{position:relative}
+.split-art .frame{border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-md);aspect-ratio:4/4.4}
+.split-art img{width:100%;height:100%;object-fit:cover}
+.gate-card{
+  background:var(--surface);border:1px solid var(--line-2);border-radius:var(--radius);box-shadow:var(--shadow-sm);
+  padding:14px 18px;display:flex;align-items:center;gap:14px;margin-top:-34px;margin-left:20px;position:relative;z-index:3;max-width:340px;
+}
+.gate-card .lc{width:42px;height:42px;border-radius:12px;background:var(--green-mist);color:var(--green);display:grid;place-items:center;flex:none}
+.gate-card .lc svg{width:19px;height:19px}
+.gate-card b{font-size:14px;display:block}
+.gate-card small{font-size:12.5px;color:var(--ink-3)}
+.form h2{font-size:34px;margin:10px 0 8px}
+.form .sub{color:var(--ink-2);margin-bottom:28px;font-size:14.5px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field{display:flex;flex-direction:column;gap:7px}
+.field.full{grid-column:1/-1}
+.label{font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between}
+.label .req{color:var(--green);font-weight:700}
+.label .hint{font-size:11.5px;color:var(--ink-3);font-weight:500}
+.input{
+  border:1.5px solid var(--line);background:var(--surface);border-radius:13px;padding:13px 15px;
+  font:inherit;color:var(--ink);transition:.2s;width:100%;
+}
+.input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 4px rgba(59,107,63,.12)}
+.input::placeholder{color:var(--ink-3)}
+textarea.input{resize:vertical;min-height:110px;line-height:1.55}
+select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238A8276' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center;cursor:pointer}
+.input-error{border-color:#C96A53;background:#FEF6F2}
+.ferr{font-size:12px;color:var(--red);display:flex;align-items:center;gap:5px}
+.ferr svg{width:13px;height:13px}
+.drop{
+  border:1.5px dashed #CFC7B8;border-radius:var(--radius);background:var(--green-mist);
+  padding:36px 20px;text-align:center;transition:.2s;cursor:pointer;color:var(--ink-2);
+}
+.drop:hover,.drop.over{border-color:var(--green);background:#EDF3EA}
+.drop svg{width:30px;height:30px;color:var(--green);margin:0 auto 10px}
+.drop b{color:var(--ink);display:block;font-weight:600}
+.drop small{font-size:12.5px;color:var(--ink-3)}
+.drop.preview{border-style:solid;padding:0;overflow:hidden}
+.drop.preview img{width:100%;max-height:220px;object-fit:cover;border-radius:calc(var(--radius) - 2px)}
+.form-foot{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:6px}
+.form-foot .note{font-size:12.5px;color:var(--ink-3);display:flex;align-items:center;gap:7px}
+.form-foot .note svg{width:15px;height:15px;color:var(--green)}
+.ok-row{display:flex;align-items:center;gap:10px;background:var(--green-mist);border:1px solid rgba(59,107,63,.25);color:var(--green-deep);padding:14px 16px;border-radius:13px;font-size:14px;font-weight:600;grid-column:1/-1}
+.ok-row svg{width:18px;height:18px;flex:none}
+.gate-locked{opacity:.55;pointer-events:none;user-select:none}
+
+.auth-card{
+  max-width:460px;margin:0 auto;background:var(--surface);border:1px solid var(--line-2);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:40px;position:relative;overflow:hidden;
+}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--green),#7FA57F)}
+.auth-card .auth-tag{
+  display:inline-flex;gap:7px;align-items:center;font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--green);background:var(--green-mist);padding:6px 12px;border-radius:999px;margin-bottom:18px;
+}
+.auth-card .auth-tag svg{width:13px;height:13px}
+.auth-card h2{font-size:28px;margin-bottom:6px}
+.auth-card .sub{color:var(--ink-2);font-size:14px;margin-bottom:26px}
+.auth-actions{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.check-row{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink-2);cursor:pointer}
+.check-row input{accent-color:var(--green);width:16px;height:16px;cursor:pointer}
+.auth-alt{text-align:center;margin-top:22px;font-size:13.5px;color:var(--ink-3)}
+.auth-alt a{color:var(--green);font-weight:600}
+.auth-alt a:hover{text-decoration:underline}
+.divider{display:flex;align-items:center;gap:14px;color:var(--ink-3);font-size:12px;margin:22px 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
+.oauth{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.oauth .btn{font-size:13.5px;padding:12px 14px}
+.oauth svg{width:16px;height:16px}
+.sec-note{display:flex;gap:10px;align-items:center;justify-content:center;font-size:12.5px;color:var(--ink-3);margin-top:22px}
+.sec-note svg{width:15px;height:15px;color:var(--green);flex:none}
+.pw-wrap{position:relative}
+.pw-wrap .input{padding-right:48px}
+.pw-eye{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:10px;
+  display:grid;place-items:center;color:var(--ink-3);transition:.2s;
+}
+.pw-eye:hover{color:var(--green)}
+.pw-eye svg{width:18px;height:18px}
+.eye-slash{display:none}
+.pw-wrap.show .eye-slash{display:block}
+.pw-wrap.show .eye-o{display:none}
+
+.profile-head{
+  display:flex;align-items:center;gap:28px;padding:48px 0 36px;border-bottom:1px solid var(--line-2);flex-wrap:wrap;
+}
+.pf-avatar{width:96px;height:96px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-family:var(--font-display);font-size:34px;font-weight:700;border:4px solid var(--surface);box-shadow:var(--shadow-sm);flex:none}
+.pf-info h1{font-size:32px}
+.pf-info .pf-handle{color:var(--green);font-weight:600;font-size:14px;margin-top:2px}
+.pf-info p{color:var(--ink-2);font-size:14px;margin-top:8px;max-width:520px}
+.pf-stats{display:flex;gap:34px;margin-left:auto}
+.pf-stat b{font-family:var(--font-display);font-size:26px;display:block}
+.pf-stat span{font-size:12.5px;color:var(--ink-3)}
+.profile-tabs{display:flex;gap:4px;margin:26px 0 30px;border-bottom:1px solid var(--line-2)}
+.p-tab{padding:11px 18px;font-weight:600;font-size:14px;color:var(--ink-3);border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:.2s;display:flex;align-items:center;gap:8px}
+.p-tab svg{width:16px;height:16px}
+.p-tab:hover{color:var(--ink)}
+.p-tab.active{color:var(--green);border-color:var(--green)}
+.p-tab .count{font-size:11.5px;background:var(--green-soft);color:var(--green);border-radius:999px;padding:2px 9px;font-weight:700}
+.sec-card{max-width:560px}
+.sec-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 0;border-bottom:1px solid var(--line-2)}
+.sec-row:last-child{border-bottom:none}
+.sec-row b{font-size:14.5px;display:block}
+.sec-row small{font-size:12.5px;color:var(--ink-3)}
+.sec-row .btn{font-size:13px;padding:9px 16px}
+.signout{margin-top:24px}
+.empty-saved{border:1.5px dashed #CFC7B8;border-radius:var(--radius);padding:48px;text-align:center;color:var(--ink-3)}
+.empty-saved svg{width:34px;height:34px;margin:0 auto 12px;color:#CFC7B8}
+
+footer{border-top:1px solid var(--line-2);background:var(--bg-soft);margin-top:40px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding:56px 0 40px}
+.foot-brand .brand{font-size:21px;margin-bottom:14px}
+.foot-brand p{font-size:13.5px;color:var(--ink-2);max-width:280px;line-height:1.6}
+.foot-col h4{font-family:var(--font-body);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px}
+.foot-col a{display:block;font-size:14px;color:var(--ink-2);padding:5px 0;transition:.2s}
+.foot-col a:hover{color:var(--green)}
+.foot-credit{border-top:1px solid var(--line-2);padding:20px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-3)}
+.foot-credit b{color:var(--green);font-weight:700}
+.foot-credit .mini{display:flex;gap:18px;align-items:center}
+.foot-credit .mini a:hover{color:var(--green)}
+
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translate(-50%,140%);z-index:100;background:var(--ink);color:#fff;
+  padding:13px 20px;border-radius:13px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;
+  box-shadow:var(--shadow-lg);transition:transform .35s cubic-bezier(.2,.8,.2,1);max-width:min(480px,90vw);
+}
+.toast.show{transform:translate(-50%,0)}
+.toast svg{width:17px;height:17px;color:#9DD09B;flex:none}
+
+.loader{position:relative;overflow:hidden}
+.loader::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:shine 1.1s infinite}
+@keyframes shine{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+@media(max-width:1200px){
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .hero-shot .frame{aspect-ratio:16/9}
+  .fc-1{left:8px;top:-18px}
+  .fc-2{right:8px;bottom:-18px}
+  .cats{grid-template-columns:repeat(3,1fr)}
+  .grid-recipes{grid-template-columns:repeat(3,1fr)}
+  .how-grid{grid-template-columns:repeat(2,1fr)}
+  .spotlight{grid-template-columns:1fr}
+  .sl-visual{display:none}
+  .split{grid-template-columns:1fr;gap:40px}
+  .detail-grid{grid-template-columns:1fr;gap:24px}
+  .side-stick{position:static}
+}
+@media(max-width:600px){
+  .wrap,.topbar-inner,.foot-grid{padding-left:20px;padding-right:20px}
+  .nav{
+    display:none;position:absolute;top:100%;left:0;right:0;z-index:60;
+    flex-direction:column;gap:4px;margin:0;padding:14px 20px 18px;
+    background:var(--surface);border-bottom:1px solid var(--line);box-shadow:var(--shadow-md);
+  }
+  .nav.open{display:flex}
+  .nav a{padding:12px 14px;justify-content:space-between}
+  .nav a::after{content:'›';font-weight:700;color:var(--ink-3)}
+  .nav a.active::after{color:var(--green)}
+  .menu-toggle{display:grid}
+  .cats{grid-template-columns:repeat(2,1fr)}
+  .grid-recipes,.foot-grid{grid-template-columns:1fr}
+  .how-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .pf-stats{margin-left:0;gap:22px}
+  .topbar-inner{gap:16px}
+}
+</style>
+</head>
+<body class="not-authed" data-view="home">
+<div class="app">
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="#home" class="brand" data-nav="home">
+      <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.6 4-3.4 6.7-3.4 10.2A4.4 4.4 0 0 0 13 17.6h0"/><path d="M12 3c-.6 4 3.4 6.7 3.4 10.2A4.4 4.4 0 0 1 11 17.6h0"/><circle cx="12" cy="19" r="1.8"/></svg></span>
+      <span>Flavorly<small>Recipe platform</small></span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="#home" data-nav="home">Home</a>
+      <a href="#browse" data-nav="browse">Browse Recipes</a>
+      <a href="#submit" data-nav="submit">Submit Recipe</a>
+      <a href="#profile" data-nav="profile">User Profile</a>
+    </nav>
+    <div class="top-actions">
+      <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <button class="icon-btn" data-nav="browse" aria-label="Search" title="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="Notifications" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        <span class="badge-dot"></span>
+      </button>
+      <button class="avatar avatar-q" data-nav="login" aria-label="Sign in" title="Sign in">Sign in</button>
+      <button class="avatar avatar-initial" data-nav="profile" aria-label="User profile" title="Qasim Zahoor">QZ</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="view active" id="view-home">
+  <div class="fade">
+    <section class="hero">
+      <div class="hero-ring r1"></div>
+      <div class="hero-ring r2"></div>
+      <div class="wrap hero-pad">
+        <div class="hero-grid">
+          <div>
+            <span class="eyebrow"><span class="index-num">01</span> Welcome to Flavorly</span>
+            <h1>Discover recipes <em>worth sharing.</em></h1>
+            <p class="lede">Explore delicious recipes, discover new flavors, and share your favorite creations with a community of food lovers.</p>
+            <div class="hero-ctas">
+              <a href="#browse" class="btn btn-primary" data-nav="browse">Browse Recipes
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+              <a href="#submit" class="btn btn-light" data-nav="submit">Submit a Recipe</a>
+            </div>
+            <div class="big-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input type="text" placeholder="Search recipes by title or ingredients..." aria-label="Search recipes">
+              <button class="btn btn-primary btn-sm" data-nav="browse">Search</button>
+            </div>
+            <div class="quick-tags">
+              <span>Popular:</span>
+              <button class="chip" data-nav="browse">Chicken dinner</button>
+              <button class="chip" data-nav="browse">Vegan bowls</button>
+              <button class="chip" data-nav="browse">Under 30 min</button>
+            </div>
+            <div class="hero-stats">
+              <div class="stat"><b>1,240+</b><span>Community recipes</span></div>
+              <div class="stat"><b>38k</b><span>Home cooks</span></div>
+              <div class="stat"><b>4.8<span style="color:var(--amber)">★</span></b><span>Average rating</span></div>
+            </div>
+          </div>
+          <div class="hero-shot">
+            <div class="frame">
+              <img src="https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=1400&auto=format&fit=crop" alt="Beautifully plated roasted vegetable bowl" loading="eager" onerror="this.closest('.frame').style.background='var(--green)'">
+            </div>
+            <div class="float-card fc-1 stars">
+              <div class="fc-icon fc-rate">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg>
+              </div>
+              <div>
+                <b>4.9 rating</b><small><span>★★★★★</span> 212 reviews</small>
+              </div>
+            </div>
+            <div class="float-card fc-2">
+              <div class="fc-icon fc-save">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 13l-7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg>
+              </div>
+              <div>
+                <b>38,204 saved</b><small>Most-bookmarked this week</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ticker">
+      <div class="wrap ticker-inner">
+        <p>Fresh from our community — <b>roasted tomato soup</b>, <b>zucchini fritters</b> &amp; <b>sourdough pavlova</b></p>
+        <p>Every recipe is reviewed and published by real home cooks</p>
+      </div>
+    </div>
+
+    <section class="section" id="categories">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow"><span class="index-num">02</span> Categories</span>
+            <h2>Explore by Category</h2>
+            <p>Curated collections for every mood, diet, and skill level.</p>
+          </div>
+          <a href="#browse" class="link-more" data-nav="browse">View all
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <div class="cats" id="catRow">
+          <article class="cat-card" data-nav="browse">
+            <img src="https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?q=80&w=600&auto=format&fit=crop" alt="Breakfast spread" loading="lazy" onerror="this.style.display='none'">
+            <span class="cat-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <div class="cat-body"><h3>Breakfast</h3><span>124 recipes</span></div>
+          </article>
+          <article class="cat-card" data-nav="browse">
+            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=600&auto=format&fit=crop" alt="Vegan bowl" loading="lazy" onerror="this.style.display='none'">
+            <span class="cat-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <div class="cat-body"><h3>Vegan</h3><span>86 recipes</span></div>
+          </article>
+          <article class="cat-card" data-nav="browse">
+            <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?q=80&w=600&auto=format&fit=crop" alt="Dessert with chocolate" loading="lazy" onerror="this.style.display='none'">
+            <span class="cat-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <div class="cat-body"><h3>Desserts</h3><span>152 recipes</span></div>
+          </article>
+          <article class="cat-card" data-nav="browse">
+            <img src="https://images.unsplash.com/photo-1476223093428-97cf3e556f9f?q=80&w=600&auto=format&fit=crop" alt="Dinner plate" loading="lazy" onerror="this.style.display='none'">
+            <span class="cat-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <div class="cat-body"><h3>Dinner</h3><span>210 recipes</span></div>
+          </article>
+          <article class="cat-card" data-nav="browse">
+            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600&auto=format&fit=crop" alt="Quick meal" loading="lazy" onerror="this.style.display='none'">
+            <span class="cat-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <div class="cat-body"><h3>Quick Meals</h3><span>178 recipes</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="featured" style="padding-top:0">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow"><span class="index-num">03</span> Featured this week</span>
+            <h2>Featured Recipes</h2>
+            <p>Hand-picked by our editorial team and loved by the community.</p>
+          </div>
+          <a href="#browse" class="link-more" data-nav="browse">Browse all recipes
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <div class="grid-recipes" id="featRow">
+          <article class="card">
+            <div class="card-media">
+              <span class="badge badge-green">Dinner</span>
+              <button class="save-btn" aria-label="Save recipe"><svg viewBox="0 0 24 24"><path d="M19 21 12 13l-7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg></button>
+              <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=700&auto=format&fit=crop" alt="Creamy garlic chicken" loading="lazy" onerror="this.style.background='var(--green-soft)'">
+            </div>
+            <div class="card-body">
+              <div class="rating">
+                <svg viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg>
+                <b>4.9</b><small>(212)</small>
+                <span class="dot"></span>
+                <span style="color:var(--ink-3);font-size:12px">35 min</span>
+              </div>
+              <h3 class="card-title"><a href="#detail" data-nav="detail">Creamy Garlic Chicken</a></h3>
+              <p class="card-desc">Pan-seared chicken in a silky garlic parmesan sauce with wilted spinach.</p>
+              <div class="card-meta">
+                <span class="badge badge-amber">Medium</span>
+                <span class="badge badge-stone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> 35 mins</span>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media">
+              <span class="badge badge-green">Dinner</span>
+              <button class="save-btn saved" aria-label="Save recipe"><svg viewBox="0 0 24 24"><path d="M19 21 12 13l-7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg></button>
+              <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?q=80&w=700&auto=format&fit=crop" alt="Mediterranean pasta" loading="lazy" onerror="this.style.background='var(--green-soft)'">
+            </div>
+            <div class="card-body">
+              <div class="rating">
+                <svg viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg>
+                <b>4.8</b><small>(168)</small>
+                <span class="dot"></span>
+                <span style="color:var(--ink-3);font-size:12px">25 min</span>
+              </div>
+              <h3 class="card-title"><a href="#detail" data-nav="detail">Mediterranean Pasta</a></h3>
+              <p class="card-desc">Cherry tomatoes, olives, feta and basil tossed through linguine.</p>
+              <div class="card-meta">
+                <span class="badge badge-green">Easy</span>
+                <span class="badge badge-stone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> 25 mins</span>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media">
+              <span class="badge badge-green">Breakfast</span>
+              <button class="save-btn" aria-label="Save recipe"><svg viewBox="0 0 24 24"><path d="M19 21 12 13l-7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg></button>
+              <img src="https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=700&auto=format&fit=crop" alt="Avocado breakfast bowl" loading="lazy" onerror="this.style.background='var(--green-soft)'">
+            </div>
+            <div class="card-body">
+              <div class="rating">
+                <svg viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg>
+                <b>4.7</b><small>(96)</small>
+                <span class="dot"></span>
+                <span style="color:var(--ink-3);font-size:12px">15 min</span>
+              </div>
+              <h3 class="card-title"><a href="#detail" data-nav="detail">Avocado Breakfast Bowl</a></h3>
+              <p class="card-desc">Creamy avocado, poached egg, cherry tomatoes and toasted seeds.</p>
+              <div class="card-meta">
+                <span class="badge badge-green">Easy</span>
+                <span class="badge badge-stone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> 15 mins</span>
+              </div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-media">
+              <span class="badge badge-green">Desserts</span>
+              <button class="save-btn" aria-label="Save recipe"><svg viewBox="0 0 24 24"><path d="M19 21 12 13l-7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg></button>
+              <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=700&auto=format&fit=crop" alt="Chocolate lava cake" loading="lazy" onerror="this.style.background='var(--green-soft)'">
+            </div>
+            <div class="card-body">
+              <div class="rating">
+                <svg viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg>
+                <b>4.9</b><small>(184)</small>
+                <span class="dot"></span>
+                <span style="color:var(--ink-3);font-size:12px">40 min</span>
+              </div>
+              <h3 class="card-title"><a href="#detail" data-nav="detail">Chocolate Lava Cake</a></h3>
+              <p class="card-desc">Molten-center chocolate cakes with a light dusting of cocoa.</p>
+              <div class="card-meta">
+                <span class="badge badge-red">Hard</span>
+                <span class="badge badge-stone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> 40 mins</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="how section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow"><span class="index-num">04</span> How Flavorly works</span>
+            <h2>From search to published plate</h2>
+            <p>A simple, structured workflow that keeps every recipe reliable.</p>
+          </div>
+        </div>
+        <div class="how-grid">
+          <div class="how-step">
+            <span class="how-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
+            <div class="n">Step 01</div>
+            <h3>Search &amp; browse</h3>
+            <p>Find recipes by title, ingredient, category, or cooking time across a fully indexed library.</p>
+          </div>
+          <div class="how-step">
+            <span class="how-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <div class="n">Step 02</div>
+            <h3>View any recipe</h3>
+            <p>Read clear ingredient lists, numbered steps, serving scaling, and print-friendly pages.</p>
+          </div>
+          <div class="how-step">
+            <span class="how-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg></span>
+            <div class="n">Step 03</div>
+            <h3>Save &amp; rate</h3>
+            <p>Bookmark favourites and leave star ratings that shape community recommendations.</p>
+          </div>
+          <div class="how-step">
+            <span class="how-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            <div class="n">Step 04</div>
+            <h3>Publish your own</h3>
+            <p>Authenticated users submit structured recipes that pass review before going live.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="spot">
+      <div class="wrap">
+        <div class="spotlight">
+          <div>
+            <span class="sl-tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 8v4l3 2"/></svg> Protected workflow</span>
+            <h2>Every recipe goes through review.</h2>
+            <p>From your kitchen to the community — submissions are validated, structured, and moderated before they are published, keeping the library trustworthy.</p>
+            <a href="#submit" class="btn btn-light" data-nav="submit">Submit a Recipe</a>
+          </div>
+          <div class="sl-visual">
+            <div class="sl-stack">
+              <h4>Submission lifecycle</h4>
+              <div class="sl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6 8-6s8 2 8 6"/></svg> Authenticated user<span class="end"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+              <div class="sl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg> Structured validation<span class="end"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+              <div class="sl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 4h4l-3 3.5L16 15l-4-2.5L8 15l1-4.5L6 7h4Z"/></svg> Editorial review<span class="end"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+              <div class="sl-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Published live</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="view" id="view-browse">
+  <div class="fade">
+    <section class="section" style="padding-bottom:88px">
+      <div class="wrap">
+        <div class="section-head" style="margin-bottom:28px">
+          <div>
+            <span class="eyebrow"><span class="index-num">02</span> Library</span>
+            <h2>Browse Recipes</h2>
+            <p>Filter by category, difficulty, or time. Results update instantly.</p>
+          </div>
+        </div>
+        <div class="filters">
+          <div class="filter-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" id="filterInput" placeholder="Filter by title or ingredient..." aria-label="Filter recipes">
+          </div>
+          <button class="chip active" data-filter="All">All</button>
+          <button class="chip" data-filter="Breakfast">Breakfast</button>
+          <button class="chip" data-filter="Vegan">Vegan</button>
+          <button class="chip" data-filter="Desserts">Desserts</button>
+          <button class="chip" data-filter="Dinner">Dinner</button>
+          <button class="chip" data-filter="Quick Meals">Quick Meals</button>
+          <select class="chip" id="timeFilter" aria-label="Filter by cooking time">
+            <option value="0">Any Time</option>
+            <option value="15">Under 15 min</option>
+            <option value="30">Under 30 min</option>
+            <option value="45">Under 45 min</option>
+            <option value="60">Under 60 min</option>
+          </select>
+        </div>
+        <div id="browseSkeleton" class="grid-recipes">
+          <div class="skeleton"><span class="sk-media sk-line"></span><span class="sk-title sk-line"></span><span class="sk-line short mid"></span><span class="sk-line short last"></span></div>
+          <div class="skeleton"><span class="sk-media sk-line"></span><span class="sk-title sk-line"></span><span class="sk-line short mid"></span><span class="sk-line short last"></span></div>
+          <div class="skeleton"><span class="sk-media sk-line"></span><span class="sk-title sk-line"></span><span class="sk-line short mid"></span><span class="sk-line short last"></span></div>
+          <div class="skeleton"><span class="sk-media sk-line"></span><span class="sk-title sk-line"></span><span class="sk-line short mid"></span><span class="sk-line short last"></span></div>
+          <div class="skeleton"><span class="sk-media sk-line"></span><span class="sk-title sk-line"></span><span class="sk-line short mid"></span><span class="sk-line short last"></span></div>
+          <div class="skeleton"><span class="sk-media sk-line"></span><span class="sk-title sk-line"></span><span class="sk-line short mid"></span><span class="sk-line short last"></span></div>
+          <div class="skeleton"><span class="sk-media sk-line"></span><span class="sk-title sk-line"></span><span class="sk-line short mid"></span><span class="sk-line short last"></span></div>
+          <div class="skeleton"><span class="sk-media sk-line"></span><span class="sk-title sk-line"></span><span class="sk-line short mid"></span><span class="sk-line short last"></span></div>
+        </div>
+        <div id="browseGrid" class="grid-recipes" style="display:none"></div>
+        <div class="result-count" id="resultCount"></div>
+        <div class="pagination" id="pagination">
+          <button class="page-btn" id="pagePrev" disabled aria-label="Previous page">‹</button>
+          <div class="pager" id="pagerNumbers"></div>
+          <button class="page-btn" id="pageNext" disabled aria-label="Next page">›</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="view" id="view-detail">
+  <div class="fade">
+    <section style="padding-bottom:40px">
+      <div class="wrap">
+        <div class="detail-grid">
+          <div class="detail-main">
+            <div class="hero-dish">
+              <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=1600&auto=format&fit=crop" alt="Creamy garlic chicken with parmesan sauce" onerror="this.style.background='var(--green-soft)'">
+              <span class="badge badge-green">Dinner</span>
+            </div>
+            <div class="quick-meta">
+              <div class="qm"><div class="qm-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><div><b>35 mins</b><small>Total time</small></div></div>
+              <div class="qm"><div class="qm-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg></div><div><b>4 servings</b><small>Yield</small></div></div>
+              <div class="qm"><div class="qm-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M17 11l2 2 4-4"/></svg></div><div><b>Medium</b><small>Difficulty</small></div></div>
+              <div class="qm"><div class="qm-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20c5 0 8-2.5 8-6 0-4-3-8-8-8S4 10 4 14c0 3.5 3 6 8 6Z"/><circle cx="9.5" cy="13.5" r="1"/><circle cx="14.5" cy="13.5" r="1"/></svg></div><div><b>Comfort food</b><small>Style</small></div></div>
+            </div>
+            <div class="detail-title">
+              <h1>Creamy Garlic Chicken</h1>
+              <div class="author-row">
+                <div class="author">
+                  <div class="avatar" style="width:38px;height:38px;font-size:13px">MA</div>
+                  <div><b>Maya Anwar</b><small>Published 3 days ago</small></div>
+                </div>
+                <div class="rate-pills">
+                  <button class="btn btn-ghost btn-sm" data-nav="browse">‹ Back to library</button>
+                  <button class="rate-btn save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 13l-7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg> Save Recipe</button>
+                  <button class="rate-btn rate"><svg viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg> Rate Recipe</button>
+                </div>
+              </div>
+            </div>
+            <p class="lede-detail">Juicy boneless chicken breasts are pan-seared until golden, then finished in a rich garlic parmesan cream sauce with baby spinach and a squeeze of lemon. A weeknight dinner that tastes like a slow Sunday.</p>
+            <div style="display:flex;align-items:center;gap:14px;margin:20px 0 8px">
+              <div class="rating"><svg viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg><b id="detailRating">4.9</b></div>
+              <small id="detailRateTxt" style="color:var(--ink-3)">212 ratings · 38,204 saves</small>
+            </div>
+            <div class="stars-inline" id="rateStars" aria-label="Rate this recipe">
+              <svg viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg>
+            </div>
+            <p style="font-size:13px;color:var(--ink-3);margin:6px 0 28px">Tap a star to leave your rating</p>
+
+            <div class="panel" style="margin-bottom:28px">
+              <div class="panel-body">
+                <h3>Ingredients</h3>
+                <div class="serv-tool"><span>Scaling servings:</span><b>4</b><span style="color:var(--ink-3)">portions</span></div>
+                <div class="ing-list" id="ingList">
+                  <div class="ing-row"><b>Chicken breasts</b><span>4 fillets</span></div>
+                  <div class="ing-row"><b>Heavy cream</b><span>300 ml</span></div>
+                  <div class="ing-row"><b>Garlic cloves</b><span>5, minced</span></div>
+                  <div class="ing-row"><b>Parmesan</b><span>60 g, grated</span></div>
+                  <div class="ing-row"><b>Baby spinach</b><span>120 g</span></div>
+                  <div class="ing-row"><b>Butter &amp; olive oil</b><span>1 tbsp each</span></div>
+                  <div class="ing-row"><b>Lemon juice</b><span>½ tbsp</span></div>
+                  <div class="ing-row"><b>Salt, pepper &amp; thyme</b><span>to taste</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-body">
+                <h3>Instructions <span id="instrCount">6 numbered steps</span></h3>
+                <div id="instrSteps">
+                <div class="step"><div class="step-num">1</div><p><b>Season &amp; sear.</b> Pat the chicken dry, season both sides, and sear in a hot pan with butter and olive oil until golden — about 5 minutes per side. Rest on a plate.</p></div>
+                <div class="step"><div class="step-num">2</div><p><b>Bloom the garlic.</b> Lower the heat, add the minced garlic and thyme, and cook 30 seconds until fragrant without browning.</p></div>
+                <div class="step"><div class="step-num">3</div><p><b>Build the sauce.</b> Pour in the cream, add the parmesan, and stir continuously until smooth and gently bubbling.</p></div>
+                <div class="step"><div class="step-num">4</div><p><b>Return the chicken.</b> Nestle the chicken back into the sauce with any resting juices, spooning sauce over the tops.</p></div>
+                <div class="step"><div class="step-num">5</div><p><b>Wilt the spinach.</b> Fold in the spinach and cook until just wilted, 2–3 minutes. Correct seasoning with salt and pepper.</p></div>
+                <div class="step"><div class="step-num">6</div><p><b>Finish &amp; serve.</b> Finish with lemon juice, a little extra parmesan, and serve with crusty bread or rice.</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="side-stick">
+            <div class="panel">
+              <div class="panel-body">
+                <h3>Nutrition <span>per serving</span></h3>
+                <div class="nutrition">
+                  <div class="nutri"><b>482</b><span>Calories</span></div>
+                  <div class="nutri"><b>38g</b><span>Protein</span></div>
+                  <div class="nutri"><b>31g</b><span>Fat</span></div>
+                  <div class="nutri"><b>6g</b><span>Carbs</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-body">
+                <h3>Tags</h3>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <span class="badge badge-green">Comfort food</span>
+                  <span class="badge badge-amber">High protein</span>
+                  <span class="badge badge-stone">Weeknight</span>
+                  <span class="badge badge-stone">30–45 min</span>
+                </div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-body">
+                <h3>Made it? Share it</h3>
+                <p style="font-size:13.5px;color:var(--ink-2);margin-bottom:14px">Tag <b>#Flavorly</b> when you plate up. Your photo could be featured next week.</p>
+                <div class="btn btn-ghost btn-sm" style="width:100%"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Share on social</div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="view" id="view-submit">
+  <div class="fade">
+    <section class="section" style="padding-bottom:80px">
+      <div class="wrap">
+        <div class="split">
+          <div class="split-art">
+            <div class="frame">
+              <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=900&auto=format&fit=crop" alt="Home cook plating a dish" onerror="this.style.background='var(--green-soft)'" loading="lazy">
+            </div>
+            <div class="gate-card">
+              <div class="lc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+              <div><b class="gate-auth-text">Authentication required</b><small class="gate-auth-sub">Publishing protects quality.</small></div>
+            </div>
+          </div>
+          <div class="form">
+            <span class="eyebrow"><span class="index-num">05</span> Contributor workspace</span>
+            <h2>Submit a Recipe</h2>
+            <p class="sub">Structure your dish once and publish it to the community. All submissions are validated and reviewed before going live.</p>
+            <div class="gate-banner" style="display:none">
+              <div class="ok-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Signed in as <b>Qasim Zahoor</b> — you can publish recipes.</div>
+            </div>
+            <form id="submitForm" class="gate-locked" novalidate>
+              <div class="form-grid">
+                <div class="field full">
+                  <label class="label" for="fTitle">Recipe title <span class="req">*</span></label>
+                  <input class="input" id="fTitle" type="text" placeholder="e.g. Creamy Garlic Chicken" required data-req>
+                  <span class="ferr" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> Title is required</span>
+                </div>
+                <div class="field full">
+                  <label class="label" for="fDesc">Description <span class="req">*</span></label>
+                  <textarea class="input" id="fDesc" placeholder="A short, appetizing summary of your dish..." required data-req></textarea>
+                  <span class="ferr" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> Please add a short description</span>
+                </div>
+                <div class="field full">
+                  <label class="label" for="fIng">Ingredients <span class="req">*</span></label>
+                  <textarea class="input" id="fIng" placeholder="One ingredient per line — 500 g chicken breasts, 300 ml cream..." required data-req></textarea>
+                  <span class="ferr" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> At least 3 ingredients are expected</span>
+                </div>
+                <div class="field full">
+                  <label class="label" for="fInstr">Instructions <span class="req">*</span></label>
+                  <textarea class="input" id="fInstr" placeholder="Write numbered steps — each on its own line..." required data-req></textarea>
+                  <span class="ferr" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> One numbered step per line, please</span>
+                </div>
+                <div class="field">
+                  <label class="label" for="fCat">Category <span class="req">*</span></label>
+                  <select class="input" id="fCat">
+                    <option value="">Select category</option>
+                    <option>Breakfast</option>
+                    <option>Vegan</option>
+                    <option>Desserts</option>
+                    <option>Dinner</option>
+                    <option>Quick Meals</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="label" for="fTime">Cooking time <span class="req">*</span></label>
+                  <select class="input" id="fTime">
+                    <option value="">Select duration</option>
+                    <option>Under 15 min</option>
+                    <option>15–30 min</option>
+                    <option>30–60 min</option>
+                    <option>Over 1 hour</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="label" for="fDiff">Difficulty <span class="req">*</span></label>
+                  <select class="input" id="fDiff">
+                    <option value="">Select difficulty</option>
+                    <option>Easy</option>
+                    <option>Medium</option>
+                    <option>Hard</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="label" for="fServ">Servings <span class="hint">optional</span></label>
+                  <input class="input" id="fServ" type="number" min="1" placeholder="e.g. 4">
+                </div>
+                <div class="field full">
+                  <label class="label" for="uploadDrop">Photo <span class="hint">JPEG / PNG / AVIF, up to 8 MB</span></label>
+                  <div class="drop" id="uploadDrop" data-label="<svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;1.8&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;><path d=&quot;M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4&quot;/><path d=&quot;M17 8 12 3 7 8&quot;/><path d=&quot;M12 3v12&quot;/></svg><b>Drag &amp; drop or browse</b><small>Click to choose a photograph of your dish</small>">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8 12 3 7 8"/><path d="M12 3v12"/></svg>
+                    <b>Drag &amp; drop or browse</b>
+                    <small>Click to choose a photograph of your dish</small>
+                  </div>
+                </div>
+                <div class="form-foot">
+                  <span class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> Submissions pass automated validation then editorial review.</span>
+                  <button class="btn btn-primary" type="submit" id="publishBtn">Publish Recipe
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="view" id="view-login">
+  <div class="fade">
+    <section class="section" style="padding-bottom:80px">
+      <div class="wrap">
+        <div class="auth-card">
+          <span class="auth-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg> Secure sign in</span>
+          <h2>Welcome back</h2>
+          <p class="sub">Log in to save recipes, rate dishes, and submit your own creations.</p>
+          <form id="loginForm" novalidate>
+            <div class="form-grid" style="grid-template-columns:1fr">
+              <div class="field">
+                <label class="label" for="lEmail">Email address <span class="req">*</span></label>
+                <input class="input" id="lEmail" type="email" placeholder="you@example.com" required data-req>
+                <span class="ferr" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> Enter a valid email address</span>
+              </div>
+              <div class="field">
+                <label class="label" for="lPass">Password <span class="req">*</span></label>
+                <div class="pw-wrap">
+                  <input class="input" id="lPass" type="password" placeholder="••••••••" required data-req>
+                  <button type="button" class="pw-eye" aria-label="Show password"><svg class="eye-o" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-slash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6A17 17 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.8-1.3M9.5 9.5a3 3 0 0 0 4.4 4.4"/></svg></button>
+                </div>
+                <span class="ferr" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> Password is required</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:2px">
+                <label class="check-row"><input type="checkbox" checked> Remember me</label>
+                <a href="#login" style="font-size:13px;color:var(--green);font-weight:600">Forgot password?</a>
+              </div>
+              <button class="btn btn-primary" type="submit" style="width:100%;padding:14px">Log in</button>
+            </div>
+          </form>
+          <div class="divider">or continue with</div>
+          <div class="oauth">
+            <button class="btn btn-ghost">G Google</button>
+            <button class="btn btn-ghost">f Apple</button>
+          </div>
+          <p class="auth-alt">New to Flavorly? <a href="#register" data-nav="register">Create an account</a></p>
+          <div class="sec-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+            Credentials are encrypted and never stored in plain text.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="view" id="view-register">
+  <div class="fade">
+    <section class="section" style="padding-bottom:80px">
+      <div class="wrap">
+        <div class="auth-card">
+          <span class="auth-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg> Join the community</span>
+          <h2>Create your account</h2>
+          <p class="sub">Two minutes from now, your recipes can reach thousands of cooks.</p>
+          <form id="regForm" novalidate>
+            <div class="form-grid">
+              <div class="field full">
+                <label class="label" for="rName">Full name <span class="req">*</span></label>
+                <input class="input" id="rName" type="text" placeholder="Qasim Zahoor" required data-req>
+                <span class="ferr" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> Please enter your name</span>
+              </div>
+              <div class="field full">
+                <label class="label" for="rEmail">Email address <span class="req">*</span></label>
+                <input class="input" id="rEmail" type="email" placeholder="you@example.com" required data-req>
+                <span class="ferr" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> Enter a valid email address</span>
+              </div>
+              <div class="field">
+                <label class="label" for="rPass">Password <span class="req">*</span></label>
+                <div class="pw-wrap">
+                  <input class="input" id="rPass" type="password" placeholder="8+ characters" required data-req minlength="8">
+                  <button type="button" class="pw-eye" aria-label="Show password"><svg class="eye-o" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-slash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4M6.6 6.6A17 17 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.8-1.3M9.5 9.5a3 3 0 0 0 4.4 4.4"/></svg></button>
+                </div>
+                <span class="ferr" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> Minimum 8 characters</span>
+              </div>
+              <div class="field">
+                <label class="label" for="rPass2">Confirm password <span class="req">*</span></label>
+                <input class="input" id="rPass2" type="password" placeholder="Repeat password" required data-req>
+                <span class="ferr" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> Passwords do not match</span>
+              </div>
+              <div class="field full" style="margin-top:2px">
+                <label class="check-row"><input type="checkbox" checked> I agree to the <u>Terms of Service</u> &amp; <u>Privacy Policy</u></label>
+              </div>
+              <button class="btn btn-primary" type="submit" style="width:100%;padding:14px;grid-column:1/-1">Create Account</button>
+            </div>
+          </form>
+          <div class="divider">or sign up with</div>
+          <div class="oauth">
+            <button class="btn btn-ghost">G Google</button>
+            <button class="btn btn-ghost">f Apple</button>
+          </div>
+          <p class="auth-alt">Already have an account? <a href="#login" data-nav="login">Log in</a></p>
+          <div class="sec-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+            Your data stays private and is never sold.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section class="view" id="view-profile">
+  <div class="fade">
+    <section class="section" style="padding-bottom:0">
+      <div class="wrap">
+        <div class="profile-head">
+          <div class="pf-avatar" id="pfAvatar">QZ</div>
+          <div class="pf-info">
+            <h1 id="pfName">Qasim Zahoor</h1>
+            <div class="pf-handle" id="pfHandle">@qasimzahoor</div>
+            <p>Full-stack software engineer crafting Flavorly — a recipe sharing platform built on clean architecture, structured data, and thoughtful UX.</p>
+          </div>
+          <div class="pf-stats">
+            <div class="pf-stat"><b>6</b><span>Recipes published</span></div>
+            <div class="pf-stat"><b>12</b><span>Saved recipes</span></div>
+            <div class="pf-stat"><b>214</b><span>Followers</span></div>
+            <div class="pf-stat"><b>38</b><span>Stars received</span></div>
+          </div>
+        </div>
+        <div class="profile-tabs">
+          <button class="p-tab active" data-ptab="pubs">My Recipes <span class="count">6</span></button>
+          <button class="p-tab" data-ptab="saved">Saved Recipes <span class="count">12</span></button>
+          <button class="p-tab" data-ptab="settings">Account &amp; Security</button>
+        </div>
+        <div id="ptab-pubs">
+          <div class="grid-recipes" id="pubsGrid"></div>
+        </div>
+        <div id="ptab-saved" style="display:none">
+          <div class="grid-recipes" id="savedGrid"></div>
+        </div>
+        <div id="ptab-settings" style="display:none">
+          <div class="sec-card panel panel-body">
+            <h3 style="margin-bottom:8px">Account &amp; security</h3>
+            <p style="font-size:13.5px;color:var(--ink-2);margin-bottom:14px">Manage the credentials protecting your contributions.</p>
+            <div class="sec-row"><div><b>Email address</b><small id="settingEmail">qasim.zahoor@example.com</small></div><button class="btn btn-ghost btn-sm">Edit</button></div>
+            <div class="sec-row"><div><b>Display name</b><small id="settingName">Qasim Zahoor</small></div><button class="btn btn-ghost btn-sm">Edit</button></div>
+            <div class="sec-row"><div><b>Password</b><small>Last changed 2 months ago</small></div><button class="btn btn-ghost btn-sm">Change</button></div>
+            <div class="sec-row"><div><b>Two-factor authentication</b><small>Not enabled</small></div><button class="btn btn-ghost btn-sm">Enable</button></div>
+            <div class="signout"><button class="btn btn-ghost" id="signOutBtn">Sign out</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="foot-grid wrap">
+    <div class="foot-brand">
+      <span class="brand">
+        <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.6 4-3.4 6.7-3.4 10.2A4.4 4.4 0 0 0 13 17.6h0"/><path d="M12 3c-.6 4 3.4 6.7 3.4 10.2A4.4 4.4 0 0 1 11 17.6h0"/><circle cx="12" cy="19" r="1.8"/></svg></span>
+        Flavorly
+      </span>
+      <p>A production-ready recipe sharing platform — searchable, cataloged, rated, and community-driven.</p>
+    </div>
+    <div class="foot-col">
+      <h4>Product</h4>
+      <a href="#browse" data-nav="browse">Browse Recipes</a>
+      <a href="#categories">Categories</a>
+      <a href="#featured">Featured</a>
+      <a href="#submit" data-nav="submit">Submit a Recipe</a>
+    </div>
+    <div class="foot-col">
+      <h4>Account</h4>
+      <a href="#login" data-nav="login">Log in</a>
+      <a href="#register" data-nav="register">Create account</a>
+      <a href="#profile" data-nav="profile">User Profile</a>
+      <a href="#profile" data-ptab-target="settings" data-nav="profile">Security</a>
+    </div>
+    <div class="foot-col">
+      <h4>Company</h4>
+      <a href="#home" data-nav="home">About</a>
+      <a href="#home" data-nav="home">Guidelines</a>
+      <a href="#home" data-nav="home">Contact</a>
+    </div>
+  </div>
+  <div class="wrap foot-credit">
+    <span>© 2026 Flavorly. Crafted with care for home cooks everywhere.</span>
+    <span class="mini">
+      <span>Product concept &amp; design by <b>Qasim Zahoor</b></span>
+      <a href="#home" data-nav="home">Privacy</a>
+      <a href="#home" data-nav="home">Terms</a>
+    </span>
+  </div>
+</footer>
+
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  var views = ['home','browse','detail','submit','login','register','profile'];
+  var current = 'home';
+
+  function show(view){
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+    var el = document.getElementById('view-'+view);
+    if(el){ el.classList.add('active'); el.querySelector('.fade').style.animation='none'; void el.querySelector('.fade').offsetWidth; el.querySelector('.fade').style.animation=''; }
+    current = view;
+    document.activeElement && document.activeElement.blur && document.activeElement.blur();
+    window.scrollTo({top:0,behavior:'auto'});
+    document.querySelectorAll('.nav a').forEach(function(n){ n.classList.toggle('active', n.getAttribute('data-nav')===view); });
+    closeMenu();
+    document.body.setAttribute('data-view', view);
+    if(view==='browse'){ runBrowse(); }
+    if(view==='profile'){ renderProfile(); }
+  }
+
+  function navigate(view){
+    show(view);
+    history.replaceState(null,'','#'+view);
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target.closest('[data-nav]');
+    if(t){
+      e.preventDefault();
+      var nav = t.getAttribute('data-nav');
+      if(nav==='detail'){
+        var card = e.target.closest('.card');
+        if(card && card.getAttribute('data-id') && card.getAttribute('data-id')!=='undefined'){ openDetail(card.getAttribute('data-id')); }
+        else{ navigate('detail'); }
+      }else{ navigate(nav); }
+      return;
+    }
+    var pf = e.target.closest('[data-ptab-target]');
+    if(pf){ setPtab(pf.getAttribute('data-ptab-target')); }
+  });
+
+  views.forEach(function(v){
+    var h = '#'+v;
+    if(window.location.hash===h){ current=v; }
+  });
+
+  var toast = document.getElementById('toast');
+  var toastTimer;
+
+  var menuBtn = document.getElementById('menuToggle');
+  var navEl = document.querySelector('.nav');
+  function closeMenu(){ if(navEl && navEl.classList.contains('open')){ navEl.classList.remove('open'); if(menuBtn){ menuBtn.setAttribute('aria-expanded','false'); } } }
+  if(menuBtn){
+    menuBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var open = navEl.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+  document.addEventListener('click', function(e){ if(navEl && navEl.classList.contains('open') && !e.target.closest('.topbar')){ closeMenu(); } });
+  function notify(msg){
+    toast.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'+msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 3200);
+  }
+
+  var authed = false;
+  var API = 'http://localhost:5000/api';
+  var TOKEN_KEY = 'flavorly_token';
+  var USER_KEY = 'flavorly_user';
+  var DEFAULT_IMG = 'https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=700&auto=format&fit=crop';
+  var live = false;
+  var currentUser = { name:'Qasim Zahoor', email:'qasim.zahoor@example.com' };
+
+  function qs(params){
+    var keys = Object.keys(params).filter(function(k){ return params[k] !== undefined && params[k] !== ''; });
+    return keys.length ? ('?' + keys.map(function(k){ return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]); }).join('&')) : '';
+  }
+  function apiJson(method, path, body, token){
+    var opt = { method: method, headers: { 'Content-Type':'application/json' } };
+    if(token) opt.headers.Authorization = 'Bearer ' + token;
+    if(body) opt.body = JSON.stringify(body);
+    return fetch(API + path, opt).then(function(res){
+      return res.json().catch(function(){ return {}; }).then(function(j){
+        if(!res.ok){ var e = new Error(j && j.message ? j.message : 'Request failed (' + res.status + ')'); e.status = res.status; throw e; }
+        return j;
+      });
+    });
+  }
+  function toDisplay(r){
+    return {
+      id: r.id, t: r.title || r.t || 'Untitled dish',
+      d: r.description || '', cat: (r.category || '').trim(),
+      diff: (r.difficulty || '').trim(), time: (Number(r.cookingTime) || 0) + ' min',
+      min: Number(r.cookingTime) || 0, rate: Number(r.rating) || 0, n: Number(r.ratingCount) || 0,
+      image: r.image || '', ing: r.ingredients || [], ins: r.instructions || [],
+      authorName: r.authorName || 'Flavorly Chef', authorId: r.authorId, created: r.createdAt || ''
+    };
+  }
+  function initials(name){
+    var parts = String(name || '?').split(/[\s]+/).filter(Boolean);
+    var ini = parts.slice(0,2).map(function(w){ return (w[0] || '').toUpperCase(); }).join('');
+    return ini || 'FL';
+  }
+  function mins(r){ return r.min !== undefined ? r.min : (parseInt(String(r.time),10) || 0); }
+
+  function applyUser(u){
+    currentUser = u || currentUser;
+    var ini = initials(currentUser.name);
+    document.querySelectorAll('.topbar .avatar-initial').forEach(function(el){ el.textContent = ini; el.title = currentUser.name; });
+    var pa = document.getElementById('pfAvatar'); if(pa) pa.textContent = ini;
+    var pn = document.getElementById('pfName'); if(pn) pn.textContent = currentUser.name;
+    var ph = document.getElementById('pfHandle'); if(ph) ph.textContent = '@' + String(currentUser.name).toLowerCase().replace(/[^a-z0-9]+/g,'');
+    var se = document.getElementById('settingEmail'); if(se && currentUser.email) se.textContent = currentUser.email;
+    var sn = document.getElementById('settingName'); if(sn) sn.textContent = currentUser.name;
+    document.querySelectorAll('.ok-row b').forEach(function(el){ el.textContent = currentUser.name; });
+    document.querySelectorAll('.gate-auth-sub').forEach(function(el){ el.textContent = 'Signed in as ' + currentUser.name + '.'; });
+  }
+  function setAuthed(a){
+    authed = a;
+    document.body.classList.toggle('not-authed', !a);
+    if(a){
+      var gate = document.querySelector('.gate-banner');
+      if(gate) gate.style.display='block';
+      var form = document.getElementById('submitForm');
+      if(form) form.classList.remove('gate-locked');
+      document.querySelectorAll('.gate-auth-text').forEach(function(el){ el.textContent='Ready to publish'; });
+      document.querySelectorAll('.gate-auth-sub').forEach(function(el){ el.textContent='Signed in as ' + (currentUser ? currentUser.name : 'Qasim Zahoor') + '.'; });
+    }else{
+      var gate2 = document.querySelector('.gate-banner');
+      if(gate2) gate2.style.display='none';
+      var form2 = document.getElementById('submitForm');
+      if(form2) form2.classList.add('gate-locked');
+      document.querySelectorAll('.gate-auth-text').forEach(function(el){ el.textContent='Authentication required'; });
+      document.querySelectorAll('.gate-auth-sub').forEach(function(el){ el.textContent='Publishing protects quality.'; });
+    }
+  }
+
+  function validateInput(inp){
+    var ok = true;
+    var p = inp.parentElement;
+    var err = p.querySelector('.ferr');
+    if(!inp.value || inp.value.trim()===''){
+      ok=false;
+    } else if(inp.type==='email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value)){
+      ok=false;
+    } else if(inp.type==='password' && inp.minLength && inp.value.length < Number(inp.minLength)){
+      ok=false; err.textContent = 'Minimum 8 characters';
+    }
+    if(inp.id==='rPass2'){
+      var p1 = document.getElementById('rPass');
+      if(p1 && inp.value!==p1.value){ ok=false; }
+    }
+    inp.classList.toggle('input-error', !ok);
+    if(err){ err.style.display = ok?'none':'flex'; }
+    return ok;
+  }
+
+  var SELS = ['fCat','fTime','fDiff'];
+  function validateSelects(){
+    var all = true;
+    SELS.forEach(function(id){
+      var s = document.getElementById(id);
+      if(!s.value){ s.classList.add('input-error'); all=false; }
+      else s.classList.remove('input-error');
+    });
+    return all;
+  }
+
+  ['fTitle','fDesc','fIng','fInstr'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('blur', function(){ validateInput(el); });
+  });
+
+  ['lEmail','lPass','rName','rEmail','rPass','rPass2'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('blur', function(){ validateInput(el); });
+  });
+
+  SELS.forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('change', function(){ if(el.value){ el.classList.remove('input-error'); } });
+  });
+
+  var submitForm = document.getElementById('submitForm');
+  submitForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var fieldsOk = true;
+    ['fTitle','fDesc','fIng','fInstr'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(!validateInput(el)) fieldsOk=false;
+    });
+    var selOk = validateSelects();
+    if(!authed){
+      notify('Sign in to unlock the recipe publisher.');
+      navigate('login');
+      return;
+    }
+    if(!fieldsOk || !selOk){
+      notify('Please fix the highlighted fields before publishing.');
+      return;
+    }
+    var btn = document.getElementById('publishBtn');
+    btn.style.pointerEvents='none'; btn.style.opacity='.65';
+    btn.innerHTML = '<span style="display:inline-flex;gap:8px;align-items:center"><span class="loader" style="display:inline-block;width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.25)"></span> Publishing…</span>';
+    function resetBtn(){
+      btn.style.pointerEvents=''; btn.style.opacity=''; btn.innerHTML='Publish Recipe <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    }
+    var TMAP = { 'Under 15 min':15, '15–30 min':30, '30–60 min':60, 'Over 1 hour':90 };
+    var payload = {
+      title: document.getElementById('fTitle').value.trim(),
+      description: document.getElementById('fDesc').value.trim(),
+      category: document.getElementById('fCat').value,
+      difficulty: document.getElementById('fDiff').value,
+      cookingTime: TMAP[document.getElementById('fTime').value] || 30,
+      ingredients: document.getElementById('fIng').value.split('\n').map(function(v){ return v.trim(); }).filter(Boolean),
+      instructions: document.getElementById('fInstr').value.split('\n').map(function(v){ return v.trim(); }).filter(Boolean)
+    };
+    apiJson('POST', '/recipes', payload, localStorage.getItem(TOKEN_KEY))
+      .then(function(res){
+        resetBtn();
+        notify('Recipe published — thank you for contributing!');
+        submitForm.reset();
+        document.getElementById('fCat').classList.remove('input-error');
+        document.getElementById('fTime').classList.remove('input-error');
+        document.getElementById('fDiff').classList.remove('input-error');
+        document.querySelectorAll('.ferr').forEach(function(f){ f.style.display='none'; });
+        document.querySelectorAll('.input').forEach(function(i){ i.classList.remove('input-error'); });
+        drop.classList.remove('preview');
+        drop.innerHTML = '' + drop.getAttribute('data-label');
+        if(live){ curResults = null; }
+        navigate('browse');
+      })
+      .catch(function(err){
+        resetBtn();
+        if(err.status===401){ notify('Session expired — please sign in again.'); navigate('login'); }
+        else{ notify(err.message || 'Could not publish your recipe.'); }
+      });
+  });
+
+  var loginForm = document.getElementById('loginForm');
+  var regForm = document.getElementById('regForm');
+  loginForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var ok = true;
+    ['lEmail','lPass'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(!validateInput(el)) ok=false;
+    });
+    if(!ok){ notify('Please check your credentials.'); return; }
+    apiJson('POST', '/auth/login', { email: document.getElementById('lEmail').value.trim(), password: document.getElementById('lPass').value }, null)
+      .then(function(res){
+        localStorage.setItem(TOKEN_KEY, res.token);
+        if(res.user) localStorage.setItem(USER_KEY, JSON.stringify(res.user));
+        setAuthed(true);
+        applyUser(res.user || currentUser);
+        notify('Welcome back, ' + (res.user && res.user.name ? res.user.name : 'Qasim') + '!');
+        navigate('profile');
+      })
+      .catch(function(err){ notify(err.message || 'Login failed.'); });
+  });
+
+  regForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var ok = true;
+    ['rName','rEmail','rPass','rPass2'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(!validateInput(el)) ok=false;
+    });
+    if(!ok){ notify('Please review the highlighted fields.'); return; }
+    apiJson('POST', '/auth/register', {
+      name: document.getElementById('rName').value.trim(),
+      email: document.getElementById('rEmail').value.trim(),
+      password: document.getElementById('rPass').value
+    }, null)
+      .then(function(res){
+        localStorage.setItem(TOKEN_KEY, res.token);
+        if(res.user) localStorage.setItem(USER_KEY, JSON.stringify(res.user));
+        setAuthed(true);
+        applyUser(res.user || currentUser);
+        notify('Account created — welcome to Flavorly!');
+        navigate('profile');
+      })
+      .catch(function(err){ notify(err.message || 'Could not create your account.'); });
+  });
+
+  document.querySelectorAll('.pw-eye').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var wrap = btn.closest('.pw-wrap');
+      var inp = wrap.querySelector('input');
+      var show = inp.type==='password';
+      inp.type = show?'text':'password';
+      wrap.classList.toggle('show', show);
+    });
+  });
+
+  var drop = document.getElementById('uploadDrop');
+  drop.addEventListener('click', function(){ drop.classList.add('over'); filePick(); });
+  ['dragenter','dragover'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); }); });
+  ['dragleave','drop'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('over'); }); });
+  drop.addEventListener('drop', function(e){ var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if(f) pickFile(f); });
+  var fileInput = document.createElement('input');
+  fileInput.type='file'; fileInput.accept='image/*';
+  function filePick(){ fileInput.click(); }
+  fileInput.addEventListener('change', function(){ if(fileInput.files[0]) pickFile(fileInput.files[0]); });
+  function pickFile(f){
+    if(!f.type || f.type.indexOf('image')!==0){ notify('Please choose an image file.'); return; }
+    var r = new FileReader();
+    r.onload = function(){
+      drop.innerHTML = '<img src="'+r.result+'" alt="Recipe photo preview">';
+      drop.classList.add('preview');
+      notify('Photo attached — looking appetizing!');
+    };
+    r.readAsDataURL(f);
+  }
+
+  var cardImage = {
+    'Creamy Garlic Chicken':'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=700&auto=format&fit=crop',
+    'Mediterranean Pasta':'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?q=80&w=700&auto=format&fit=crop',
+    'Avocado Breakfast Bowl':'https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=700&auto=format&fit=crop',
+    'Chocolate Lava Cake':'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=700&auto=format&fit=crop',
+    'Roasted Tomato Soup':'https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=700&auto=format&fit=crop',
+    'Zucchini Fritters':'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?q=80&w=700&auto=format&fit=crop',
+    'Sourdough Pancakes':'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=700&auto=format&fit=crop',
+    'Lemon Herb Salmon':'https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=700&auto=format&fit=crop',
+    'Berry Pavlova':'https://images.unsplash.com/photo-1560008581-09826d1de69e?q=80&w=700&auto=format&fit=crop',
+    'Vegan Buddha Bowl':'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=700&auto=format&fit=crop',
+    'Crispy Tacos':'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=700&auto=format&fit=crop',
+    'Caprese Grilled Panini':'https://images.unsplash.com/photo-1475090169767-40ed8d18f67d?q=80&w=700&auto=format&fit=crop',
+    'Hearty Lentil Dahl':'https://images.unsplash.com/photo-1543332164-6e82f355badc?q=80&w=700&auto=format&fit=crop',
+    'Wild Mushroom Risotto':'https://images.unsplash.com/photo-1476124369491-e7addf5db371?q=80&w=700&auto=format&fit=crop',
+    'Orange Panna Cotta':'https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=700&auto=format&fit=crop'
+  };
+
+  var recipes = [
+    {t:'Creamy Garlic Chicken', d:'Pan-seared chicken in a silky garlic parmesan sauce with wilted spinach.', cat:'Dinner', diff:'Medium', time:'35 min', rate:4.9, n:212, saved:1},
+    {t:'Mediterranean Pasta', d:'Cherry tomatoes, olives, feta and basil tossed through linguine.', cat:'Dinner', diff:'Easy', time:'25 min', rate:4.8, n:168, saved:0},
+    {t:'Avocado Breakfast Bowl', d:'Creamy avocado, poached egg, cherry tomatoes and toasted seeds.', cat:'Breakfast', diff:'Easy', time:'15 min', rate:4.7, n:96, saved:0},
+    {t:'Chocolate Lava Cake', d:'Molten-center chocolate cakes with a light dusting of cocoa.', cat:'Desserts', diff:'Hard', time:'40 min', rate:4.9, n:184, saved:0},
+    {t:'Roasted Tomato Soup', d:'Slow-roasted tomatoes blended with basil and a swirl of cream.', cat:'Quick Meals', diff:'Easy', time:'45 min', rate:4.6, n:143, saved:0},
+    {t:'Zucchini Fritters', d:'Crisp golden fritters with garlic yogurt and fresh herbs.', cat:'Vegan', diff:'Easy', time:'20 min', rate:4.5, n:78, saved:0},
+    {t:'Sourdough Pancakes', d:'Fluffy sourdough pancakes topped with seasonal fruit and honey.', cat:'Breakfast', diff:'Medium', time:'30 min', rate:4.8, n:204, saved:0},
+    {t:'Lemon Herb Salmon', d:'Oven-baked salmon fillets with lemon, dill and cracked pepper.', cat:'Dinner', diff:'Easy', time:'22 min', rate:4.7, n:131, saved:0},
+    {t:'Berry Pavlova', d:'Crisp meringue, pillowy cream, and a tumble of fresh berries.', cat:'Desserts', diff:'Hard', time:'90 min', rate:4.9, n:221, saved:0},
+    {t:'Vegan Buddha Bowl', d:'Quinoa, roasted vegetables, hummus and tahini in one bowl.', cat:'Vegan', diff:'Easy', time:'35 min', rate:4.6, n:117, saved:0},
+    {t:'Crispy Tacos', d:'Spiced fillings, crunchy shells, and quick-pickled slaw.', cat:'Quick Meals', diff:'Medium', time:'25 min', rate:4.7, n:158, saved:0},
+    {t:'Caprese Grilled Panini', d:'Mozzarella, tomato and pesto pressed between crisp bread.', cat:'Quick Meals', diff:'Easy', time:'12 min', rate:4.5, n:89, saved:0},
+    {t:'Hearty Lentil Dahl', d:'Simmered red lentils with aromatic spices and coconut.', cat:'Vegan', diff:'Medium', time:'40 min', rate:4.8, n:172, saved:0},
+    {t:'Wild Mushroom Risotto', d:'Creamy arborio rice with porcini mushrooms and parmesan.', cat:'Dinner', diff:'Hard', time:'55 min', rate:4.8, n:196, saved:0},
+    {t:'Orange Panna Cotta', d:'Silky vanilla panna cotta with a citrus caramel finish.', cat:'Desserts', diff:'Medium', time:'50 min', rate:4.6, n:104, saved:0}
+  ];
+
+  var savedSet = {1:true};
+
+  var currentId = null;
+  function openDetail(id){
+    currentId = id;
+    if(!live){ navigate('detail'); return; }
+    var rec = null;
+    recipes.forEach(function(r){ if(String(r.id)===String(id)) rec = r; });
+    if(rec){ fillDetail(rec); navigate('detail'); return; }
+    apiJson('GET', '/recipes/' + encodeURIComponent(id), null, null)
+      .then(function(res){
+        if(res && res.recipe){ fillDetail(toDisplay(res.recipe)); }
+        navigate('detail');
+      })
+      .catch(function(){ navigate('detail'); });
+  }
+
+  function fillDetail(r){
+    var v = document.getElementById('view-detail');
+    if(!v) return;
+    var img = v.querySelector('.hero-dish img');
+    if(img){ img.src = r.image || cardImage[r.t] || DEFAULT_IMG; img.alt = r.t; }
+    var badge = v.querySelector('.hero-dish .badge');
+    if(badge) badge.textContent = r.cat;
+    var qms = v.querySelectorAll('.quick-meta .qm');
+    if(qms[0]) qms[0].querySelector('b').textContent = r.time;
+    if(qms[2]) qms[2].querySelector('b').textContent = r.diff;
+    var h1 = v.querySelector('.detail-title h1'); if(h1) h1.textContent = r.t;
+    var av = v.querySelector('.author .avatar'); if(av) av.textContent = initials(r.authorName);
+    var an = v.querySelector('.author b'); if(an) an.textContent = r.authorName;
+    var ap = v.querySelector('.author small');
+    if(ap){ ap.textContent = r.created ? 'Published ' + new Date(r.created).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}) : 'Flavorly original'; }
+    var lede = v.querySelector('.lede-detail'); if(lede) lede.textContent = r.d;
+    var rt = document.getElementById('detailRating'); if(rt) rt.textContent = (Number(r.rate)||0).toFixed(1);
+    var rtx = document.getElementById('detailRateTxt');
+    if(rtx) rtx.textContent = (Number(r.n)||0) + ' ratings';
+    var ingBox = document.getElementById('ingList');
+    if(ingBox){
+      ingBox.innerHTML = (r.ing.length ? r.ing : []).map(function(ing){
+        var m = String(ing).match(/^([\d\/\s.,¼½¾⅓⅔⅛·]+(?:[a-zA-Z%µ\/]+)?)\s+(.+)$/);
+        var amt = m ? m[1].trim() : '';
+        var name = m ? m[2] : ing;
+        return '<div class="ing-row"><b>' + name + '</b>' + (amt ? '<span>' + amt + '</span>' : '<span></span>') + '</div>';
+      }).join('');
+    }
+    var ic = document.getElementById('instrCount');
+    if(ic) ic.textContent = r.ins.length + ' numbered step' + (r.ins.length===1?'':'s');
+    var steps = document.getElementById('instrSteps');
+    if(steps){
+      steps.innerHTML = (r.ins.length ? r.ins : []).map(function(s, i){
+        return '<div class="step"><div class="step-num">' + (i+1) + '</div><p>' + s + '</p></div>';
+      }).join('');
+    }
+  }
+
+  function cardHTML(r, i){
+    var stars = '';
+    for(var s=0;s<5;s++){
+      stars += '<svg viewBox="0 0 24 24" style="'+(s < Math.round(r.rate) ? '' : 'opacity:.28;')+'color:var(--amber);fill:var(--amber)"><path d="m12 2.5 2.9 5.9 6.5.95-4.7 4.6 1.1 6.5L12 17.6l-5.8 3.05 1.1-6.5-4.7-4.6 6.5-.95Z"/></svg>';
+    }
+    var diffCls = r.diff==='Hard' ? 'badge-red' : (r.diff==='Medium' ? 'badge-amber' : 'badge-green');
+    return ''+
+      '<article class="card" data-id="'+r.id+'">'+
+        '<div class="card-media">'+
+          '<span class="badge badge-green">'+r.cat+'</span>'+
+          '<button class="save-btn'+(savedSet[i]?' saved':'')+'" data-save="'+i+'" aria-label="Save recipe"><svg viewBox="0 0 24 24"><path d="M19 21 12 13l-7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg></button>'+
+          '<img src="'+(r.image || cardImage[r.t] || DEFAULT_IMG)+'" alt="'+r.t+'" loading="lazy" onerror="this.style.background=\'var(--green-soft)\'">'+
+        '</div>'+
+        '<div class="card-body">'+
+          '<div class="rating" style="width:100%">'+stars+' <b>'+r.rate.toFixed(1)+'</b><small>('+r.n+')</small></div>'+
+          '<h3 class="card-title"><a href="#detail" data-nav="detail">'+r.t+'</a></h3>'+
+          '<p class="card-desc">'+r.d+'</p>'+
+          '<div class="card-meta"><span class="badge '+diffCls+'">'+r.diff+'</span><span class="badge badge-stone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> '+r.time+'</span></div>'+
+        '</div>'+
+      '</article>';
+  }
+
+  var filterCat = 'All';
+
+  function browseData(){
+    var q = (document.getElementById('filterInput').value||'').toLowerCase();
+    var t = Number(document.getElementById('timeFilter').value)||0;
+    return recipes.filter(function(r){
+      var catOk = filterCat==='All' || r.cat===filterCat;
+      var qOk = !q || (r.t||'').toLowerCase().indexOf(q)!==-1 || (r.d||'').toLowerCase().indexOf(q)!==-1 || (r.cat||'').toLowerCase().indexOf(q)!==-1;
+      var tOk = !t || (mins(r)>0 && mins(r)<=t);
+      return catOk && qOk && tOk;
+    });
+  }
+
+  var browseGrid = document.getElementById('browseGrid');
+  var browseSkeleton = document.getElementById('browseSkeleton');
+  var PER_PAGE = 4;
+  var currentPage = 1;
+  var curResults = null;
+
+  function renderPager(totalPages){
+    var pager = document.getElementById('pagerNumbers');
+    pager.innerHTML = '';
+    for(var p=1; p<=totalPages; p++){
+      var b = document.createElement('button');
+      b.className = 'page-btn' + (p===currentPage ? ' active' : '');
+      b.textContent = p;
+      b.setAttribute('data-page', p);
+      b.addEventListener('click', function(e){
+        currentPage = Number(e.target.getAttribute('data-page'));
+        renderBrowse();
+      });
+      pager.appendChild(b);
+    }
+    document.getElementById('pagePrev').disabled = currentPage<=1;
+    document.getElementById('pageNext').disabled = currentPage>=totalPages;
+    var pagination = document.getElementById('pagination');
+    pagination.style.display = totalPages>1 ? 'flex' : 'none';
+  }
+
+  function renderBrowse(){
+    var data = curResults || browseData();
+    var totalPages = Math.max(1, Math.ceil(data.length / PER_PAGE));
+    if(currentPage > totalPages) currentPage = totalPages;
+    var start = (currentPage-1) * PER_PAGE;
+    var pageData = data.slice(start, start + PER_PAGE);
+
+    var h = '';
+    for(var i=0;i<pageData.length;i++){ var idx = recipes.indexOf(pageData[i]); h += cardHTML(pageData[i], idx); }
+    if(!h){ h = '<div class="empty-saved" style="grid-column:1/-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><p style="font-weight:600;color:var(--ink-2)">No recipes match your filters</p><p style="font-size:13px;margin-top:4px">Try a different category or clear the search.</p></div>'; }
+    browseGrid.innerHTML = h;
+    renderPager(totalPages);
+    var count = document.getElementById('resultCount');
+    count.innerHTML = 'Showing <b>'+pageData.length+'</b> of <b>'+data.length+'</b> recipes' + (totalPages>1 ? ' · page <b>'+currentPage+'</b>/'+totalPages : '');
+    browseSkeleton.style.display='grid';
+    browseGrid.style.display='none';
+    count.style.display='none';
+    setTimeout(function(){
+      browseSkeleton.style.display='none';
+      browseGrid.style.display='grid';
+      count.style.display='block';
+    }, 350);
+  }
+
+  function runBrowse(){
+    currentPage = 1;
+    if(live){
+      fetchBrowse();
+    }else{
+      curResults = null;
+      renderBrowse();
+    }
+  }
+
+  function fetchBrowse(){
+    var q = (document.getElementById('filterInput').value||'').trim();
+    var t = Number(document.getElementById('timeFilter').value)||0;
+    var params = {};
+    if(q) params.search = q;
+    if(filterCat!=='All') params.category = filterCat;
+    if(t) params.maxTime = t;
+    browseSkeleton.style.display='grid';
+    browseGrid.style.display='none';
+    apiJson('GET', '/recipes' + qs(params), null, null)
+      .then(function(res){
+        var list = (res && res.recipes ? res.recipes : []).map(toDisplay);
+        if(live){
+          currentPage = (curResults ? currentPage : 1);
+          recipes = list;
+        }
+        curResults = list;
+        live = true;
+        renderBrowse();
+      })
+      .catch(function(){
+        live = false;
+        curResults = null;
+        renderBrowse();
+      });
+  }
+
+  document.getElementById('pagePrev').addEventListener('click', function(){
+    if(currentPage>1){ currentPage--; renderBrowse(); window.scrollTo({top:0,behavior:'smooth'}); }
+  });
+  document.getElementById('pageNext').addEventListener('click', function(){
+    var totalPages = Math.max(1, Math.ceil(browseData().length / PER_PAGE));
+    if(currentPage<totalPages){ currentPage++; renderBrowse(); window.scrollTo({top:0,behavior:'smooth'}); }
+  });
+
+  var filtInput = document.getElementById('filterInput');
+  var filtPause;
+  filtInput.addEventListener('input', function(){
+    clearTimeout(filtPause);
+    filtPause = setTimeout(runBrowse, 250);
+  });
+  var timeFilterEl = document.getElementById('timeFilter');
+  if(timeFilterEl) timeFilterEl.addEventListener('change', function(){ runBrowse(); });
+  document.querySelectorAll('[data-filter]').forEach(function(c){
+    c.addEventListener('click', function(){
+      document.querySelectorAll('[data-filter]').forEach(function(x){ x.classList.remove('active'); });
+      c.classList.add('active');
+      filterCat = c.getAttribute('data-filter');
+      runBrowse();
+    });
+  });
+
+  document.addEventListener('click', function(e){
+    var s = e.target.closest('[data-save]');
+    if(s){
+      var idx = Number(s.getAttribute('data-save'));
+      savedSet[idx] = !savedSet[idx];
+      var svg = '<svg viewBox="0 0 24 24"><path d="M19 21 12 13l-7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg>';
+      if(savedSet[idx]){ s.classList.add('saved'); notify('Saved to your collection'); }
+      else { s.classList.remove('saved'); notify('Removed from saved recipes'); }
+      return;
+    }
+    var sv = e.target.closest('.save-btn:not([data-save])');
+    if(sv && !savedSet['detail']){
+      e.preventDefault();
+      savedSet['detail']=true; sv.classList.add('saved');
+      notify('Saved — find it in your profile later.');
+      return;
+    }
+  });
+
+  var starsEl = document.getElementById('rateStars');
+  if(starsEl){
+    starsEl.querySelectorAll('svg').forEach(function(star, i){
+      star.addEventListener('mouseenter', function(){
+        starsEl.querySelectorAll('svg').forEach(function(s2, j){ s2.style.fill = (j<=i)?'var(--amber)':'none'; s2.style.stroke=(j<=i)?'var(--amber)':'var(--amber)'; });
+      });
+      star.addEventListener('click', function(){
+        notify('Thanks — your rating of '+(i+1)+' star'+(i?'s':'')+' was recorded.');
+      });
+    });
+    starsEl.addEventListener('mouseleave', function(){
+      starsEl.querySelectorAll('svg').forEach(function(s2){ s2.style.fill='none'; s2.style.stroke='var(--amber)'; });
+    });
+  }
+
+  function setPtab(name){
+    document.querySelectorAll('.p-tab').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-ptab')===name); });
+    document.getElementById('ptab-pubs').style.display = name==='pubs' ? 'block':'none';
+    document.getElementById('ptab-saved').style.display = name==='saved' ? 'block':'none';
+    document.getElementById('ptab-settings').style.display = name==='settings' ? 'block':'none';
+  }
+  document.querySelectorAll('.p-tab').forEach(function(b){
+    b.addEventListener('click', function(){ setPtab(b.getAttribute('data-ptab')); });
+  });
+
+  var signOutBtn = document.getElementById('signOutBtn');
+  if(signOutBtn) signOutBtn.addEventListener('click', function(){
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    setAuthed(false);
+    notify('Signed out securely.');
+    navigate('home');
+  });
+
+  function renderProfile(){
+    var pubList;
+    if(live){
+      pubList = recipes.filter(function(r){ return r.authorName && currentUser && String(r.authorName)===String(currentUser.name); });
+    }else{
+      pubList = [0,4,7,9,12,14].map(function(i){ return recipes[i]; }).filter(Boolean);
+    }
+    var pubsGrid = document.getElementById('pubsGrid');
+    var empty = '<div class="empty-saved" style="grid-column:1/-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><p style="font-weight:600;color:var(--ink-2)">No published recipes yet</p><p style="font-size:13px;margin-top:4px">Publish a recipe from the Submit page to see it here.</p></div>';
+    pubsGrid.innerHTML = pubList.length ? pubList.map(function(r){ return cardHTML(r, recipes.indexOf(r)); }).join('') : empty;
+    var tab = document.querySelector('.p-tab[data-ptab="pubs"] .count'); if(tab) tab.textContent = pubList.length;
+    var st = document.querySelector('#view-profile .pf-stats .pf-stat b'); if(st) st.textContent = pubList.length;
+    var savedIdx = [];
+    recipes.forEach(function(r,i){ if(savedSet[i]) savedIdx.push(i); });
+    if(savedIdx.length===0){
+      document.getElementById('savedGrid').innerHTML = '<div class="empty-saved" style="grid-column:1/-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 13l-7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg><p style="font-weight:600;color:var(--ink-2)">Nothing saved yet</p><p style="font-size:13px;margin-top:4px">Bookmark recipes while browsing to see them here.</p></div>';
+    } else {
+      document.getElementById('savedGrid').innerHTML = savedIdx.map(function(i){ return cardHTML(recipes[i], i); }).join('');
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    var t = e.target.closest('.rate-btn.save');
+    if(t){
+      var was = t.classList.contains('picked');
+      t.classList.toggle('picked', !was);
+      t.innerHTML = was
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 13l-7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg> Save Recipe'
+        : '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M19 21 12 13l-7 8V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/></svg> Saved';
+      notify(was?'Removed from saved recipes':'Recipe saved');
+    }
+  });
+
+  var hash = window.location.hash.slice(1);
+  var initial = views.indexOf(hash)!==-1 ? hash : 'home';
+
+  function bootstrapWith(result){
+    var token = localStorage.getItem(TOKEN_KEY);
+    var p = Promise.resolve();
+    if(token){
+      p = apiJson('GET', '/auth/me', null, token).then(function(res){
+        if(res && res.user){
+          setAuthed(true);
+          applyUser(res.user);
+        }
+      }).catch(function(){
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        setAuthed(false);
+      });
+    }
+    p.then(function(){
+      return apiJson('GET', '/recipes').then(function(res){
+        if(res && res.recipes){
+          live = true;
+          recipes = res.recipes.map(toDisplay);
+          curResults = null;
+        }
+      }).catch(function(){ live = false; });
+    }).then(function(){
+      applyUser(currentUser);
+      show(initial);
+    });
+  }
+
+  window.addEventListener('hashchange', function(){
+    var h = window.location.hash.slice(1);
+    if(views.indexOf(h)!==-1){ show(h); }
+  });
+
+  setTimeout(function(){ bootstrapWith(); }, 30);
+})();
+</script>
+</body>
+</html>
