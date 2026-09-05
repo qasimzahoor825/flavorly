@@ -4,9 +4,11 @@ import { DataStore } from './config/db.js';
 
 import authRoutes from './routes/authRoutes.js';
 import recipeRoutes from './routes/recipeRoutes.js';
+import { seedIfEmpty } from './seed-data.js';
 
 export function createApp() {
   DataStore.load();
+  seedIfEmpty();
 
   const app = express();
 

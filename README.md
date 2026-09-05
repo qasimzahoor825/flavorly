@@ -39,6 +39,18 @@ Health check: `GET http://localhost:5000/api/health`
 
 Just open `flavorly/index.html` in a browser. The app auto-detects the local API and switches into **live mode** (browse, search, filters, detail, register, login, publish all hit the real backend). Without the server it falls back to built-in demo data.
 
+## Deploy on Vercel
+
+The repo is configured for single-project deployment on Vercel:
+
+- `api/index.js` — serverless entrypoint that exports the Express app (`@vercel/node`).
+- `vercel.json` — routes `/api/*` to the function and serves `flavorly/index.html` as the homepage.
+- `package.json` — root manifest so Vercel installs backend dependencies.
+
+The frontend auto-detects its API base URL: when served over HTTP(S) it uses **same-origin `/api`**; when opened from `file://` it falls back to `http://localhost:5000/api`.
+
+> **Note:** the JSON datastore is ephemeral on serverless hosting (Vercel's filesystem is read-only except `/tmp`). The API auto-seeds the 12 recipes on every cold start, so browse/search/detail always work; user registrations and new recipes live in-memory for the warm instance's lifetime. For durable persistence, swap `backend/src/config/db.js` for Vercel Postgres/KV or MongoDB (single-module change).
+
 ## API reference
 
 | Method | Endpoint                     | Auth | Description                                  |
@@ -70,11 +82,14 @@ Just open `flavorly/index.html` in a browser. The app auto-detects the local API
 ## Project structure
 
 ```
+api/index.js             Vercel serverless entrypoint (exports the Express app)
+vercel.json              Vercel build routes (API + static frontend)
+package.json             root manifest for Vercel installs
 backend/
   src/
     server.js              entrypoint
-    app.js                 Express app, routes, error handlers
-    config/db.js           JSON datastore (load/save/CRUD)
+    app.js                 Express app, routes, error handlers (auto-seeds if empty)
+    config/db.js           JSON datastore (load/save/CRUD; Vercel-aware /tmp)
     config/env.js          env config (PORT, JWT, optional GEMINI key)
     models/                user + recipe (schema + validation + search)
     controllers/           auth + recipe controllers

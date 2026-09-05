@@ -3,10 +3,15 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = join(__dirname, '..', 'data');
+const IS_VERCEL = !!process.env.VERCEL;
+const DATA_DIR = IS_VERCEL ? join('/tmp', 'flavorly') : join(__dirname, '..', 'data');
 const DB_FILE = join(DATA_DIR, 'db.json');
 
-mkdirSync(DATA_DIR, { recursive: true });
+try {
+  mkdirSync(DATA_DIR, { recursive: true });
+} catch (err) {
+  console.warn('[db] could not create data dir (ephemeral mode):', err.message);
+}
 
 function emptyDb() {
   return { users: [], recipes: [], _meta: { seededAt: null } };
@@ -27,7 +32,11 @@ function load() {
 }
 
 function save() {
-  writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
+  try {
+    writeFileSync(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
+  } catch (err) {
+    console.warn('[db] write skipped (ephemeral filesystem):', err.message);
+  }
 }
 
 export const DataStore = {
